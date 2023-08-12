@@ -6,6 +6,52 @@
 //!
 //! Currently focused only on support for sending emails but this may change in the future.
 //! Available both as async (default) or as blocking using the "blocking" feature.
+//!
+//! Note that usage of this lib will require a google API service account with domain wide delegation for gmail setup with a google cloud project with the gmail API enabled.
+//! Links for more information:
+//!  - <https://cloud.google.com/iam/docs/service-account-overview>
+//!  - <https://support.google.com/a/answer/162106?hl=en&fl=1&sjid=12697421685211806668-NA>
+//!  - <https://developers.google.com/gmail/api/guides>
+//!
+//! ## Features
+//! There is currently only one feature, `blocking` which will add blocking alternatives to all async functions with the same name suffixed with `_blocking`.
+//! E.g. `send_email_blocking` instead of `send_email`.
+//!
+//! ## Examples
+//! Examples of how to use this crate.
+//!
+//! ### Async Example
+//! ```rust
+//! let email_client = GmailClient::builder(
+//!     "service_account.json",
+//!     "noreply@example.test",
+//! )
+//! .expect("Failed to read service account file")
+//! .build()
+//! .await
+//! .expect("Failed to retrieve access token");
+//!
+//! email_client
+//!     .send_email("some_user@domain.test")
+//!     .await
+//!     .expect("Failed to send email");
+//! ```
+//!
+//! ### Blocking Example
+//! Note: Requires the `blocking` feature.
+//! ```rust
+//! let email_client = GmailClient::builder(
+//!     "service_account.json",
+//!     "noreply@example.test",
+//! )
+//! .expect("Failed to read service account file")
+//! .build_blocking()
+//! .expect("Failed to retrieve access token");
+//!
+//! email_client
+//!     .send_email_blocking("some_user@domain.test")
+//!     .expect("Failed to send email");
+//! ```
 
 use std::path::Path;
 
@@ -13,17 +59,15 @@ use async_impl::{send_email::send_email, token::retrieve_token};
 use error::Result;
 use service_account::ServiceAccount;
 
-#[doc = "inline"]
-pub mod error;
-
 mod async_impl;
 mod common;
+mod error;
 mod service_account;
 
 #[cfg(feature = "blocking")]
 mod blocking;
 
-/// The `GmailClientBuilder` is the intended way of creating a `GmailClient`.
+/// The `GmailClientBuilder` is the intended way of creating a [`GmailClient`].
 #[derive(Debug, Clone)]
 pub struct GmailClientBuilder {
     service_account: ServiceAccount,
@@ -33,7 +77,7 @@ pub struct GmailClientBuilder {
 
 impl<'a> GmailClientBuilder {
     /// Create a new `GmailClientBuilder`.
-    /// Will return an error if unable to read & parse the `service_account_path`, for example if the file does not exist or has an incorrect format.
+    /// Will return an error if unable to read & parse the `service_account_path` if, for example, the file does not exist or has an incorrect format.
     pub fn new<P: AsRef<Path>, S: Into<String>>(
         service_account_path: P,
         send_from_email: S,
@@ -51,7 +95,7 @@ impl<'a> GmailClientBuilder {
         self
     }
 
-    /// Build a `GmailClient` from this `GmailClientBuilder`.
+    /// Build a [`GmailClient`] from this `GmailClientBuilder`.
     /// Note: This function will retrieve an access token from the Google API and as such make an API request.
     pub async fn build(self) -> Result<GmailClient> {
         let token = retrieve_token(&self.service_account, &self.send_from_email).await?;
@@ -63,7 +107,7 @@ impl<'a> GmailClientBuilder {
         })
     }
 
-    /// A blocking alternative to the `build` function.
+    /// A blocking alternative to the [`build()`] function.
     #[cfg(feature = "blocking")]
     pub fn build_blocking(self) -> Result<GmailClient> {
         use blocking::token::retrieve_token_blocking;
@@ -87,7 +131,7 @@ pub struct GmailClient {
 }
 
 impl GmailClient {
-    /// Alias for `GmailClientBuilder::new`.
+    /// Alias for [`GmailClientBuilder::new()`].
     pub fn builder<P: AsRef<Path>, S: Into<String>>(
         service_account_path: P,
         send_from_email: S,
@@ -113,7 +157,7 @@ impl GmailClient {
         .await
     }
 
-    /// A blocking alternative to `send_email`.
+    /// A blocking alternative to [`send_email()`].
     #[cfg(feature = "blocking")]
     pub fn send_email_blocking(
         &self,
