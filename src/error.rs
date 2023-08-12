@@ -17,8 +17,8 @@ pub enum GoogleApiError {
     #[error("Error sending email `{0}`")]
     EmailSendError(String),
     /// An IO error occurred.
-    #[error("IO error `{0}`")]
-    IOError(#[from] std::io::Error),
+    #[error("Failed to load service account file `{0}`")]
+    ServiceAccountLoadFailure(std::io::Error),
     /// A serialization error occurred
     #[error("Serialization error `{0}`")]
     SerdeError(#[from] serde_json::Error),

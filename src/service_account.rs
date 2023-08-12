@@ -2,9 +2,9 @@ use std::{fs, path::Path};
 
 use serde::{Deserialize, Serialize};
 
-use crate::error::Result;
+use crate::error::{GoogleApiError, Result};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ServiceAccount {
     #[serde(rename = "type")]
     pub account_type: String,
@@ -21,7 +21,8 @@ pub struct ServiceAccount {
 
 impl ServiceAccount {
     pub fn load_from_file<P: AsRef<Path>>(file_path: P) -> Result<Self> {
-        let file_contents = fs::read_to_string(file_path)?;
+        let file_contents = fs::read_to_string(file_path)
+            .map_err(|e| GoogleApiError::ServiceAccountLoadFailure(e))?;
         Ok(serde_json::from_str(&file_contents)?)
     }
 }

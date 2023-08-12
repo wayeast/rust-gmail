@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
+#![deny(missing_debug_implementations)]
 
 //! # A Rust library to interact with the google Gmail API using a service account.
 //!
@@ -7,19 +8,22 @@
 
 use std::path::Path;
 
+use async_impl::{send_email::send_email, token::retrieve_token};
 use error::Result;
-use send_email::send_email;
 use service_account::ServiceAccount;
-use token::retrieve_token;
 
 #[doc = "inline"]
 pub mod error;
 
-mod send_email;
+mod async_impl;
+mod common;
 mod service_account;
-mod token;
+
+#[cfg(feature = "blocking")]
+mod blocking;
 
 /// TODO
+#[derive(Debug, Clone)]
 pub struct GmailClientBuilder {
     service_account: ServiceAccount,
     send_from_email: String,
@@ -55,9 +59,24 @@ impl<'a> GmailClientBuilder {
             mock_mode: self.mock_mode,
         })
     }
+
+    /// TODO
+    #[cfg(feature = "blocking")]
+    pub fn build_blocking(self) -> Result<GmailClient> {
+        use blocking::token::retrieve_token_blocking;
+
+        let token = retrieve_token_blocking(&self.service_account, &self.send_from_email)?;
+
+        Ok(GmailClient {
+            send_from_email: self.send_from_email,
+            token,
+            mock_mode: self.mock_mode,
+        })
+    }
 }
 
 /// TODO
+#[derive(Debug, Clone)]
 pub struct GmailClient {
     send_from_email: String,
     token: String,
@@ -89,5 +108,25 @@ impl GmailClient {
             self.mock_mode,
         )
         .await
+    }
+
+    /// TODO
+    #[cfg(feature = "blocking")]
+    pub fn send_email_blocking(
+        &self,
+        send_to_email: &str,
+        subject: &str,
+        content: &str,
+    ) -> Result<()> {
+        use blocking::send_email::send_email_blocking;
+
+        send_email_blocking(
+            send_to_email,
+            subject,
+            content,
+            &self.token,
+            &self.send_from_email,
+            self.mock_mode,
+        )
     }
 }
