@@ -9,7 +9,7 @@ homepage = "https://github.com/viddem/rust-gmail"
 repository = "https://github.com/viddem/rust-gmail"
 documentation = "https://docs.rs/rust-gmail"
 authors = ["Vidar Magnusson <rust-gmail@vidarmagnusson.com>"]
-license-file = "LICENSE.txt"
+license = "MIT"
 readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
