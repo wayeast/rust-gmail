@@ -4,7 +4,8 @@
 
 //! # A Rust library to interact with the google Gmail API using a service account.
 //!
-//! Currently focused only on support for sending emails but this may expand in the future.
+//! Currently focused only on support for sending emails but this may change in the future.
+//! Available both as async (default) or as blocking using the "blocking" feature.
 
 use std::path::Path;
 
@@ -22,7 +23,7 @@ mod service_account;
 #[cfg(feature = "blocking")]
 mod blocking;
 
-/// TODO
+/// The `GmailClientBuilder` is the intended way of creating a `GmailClient`.
 #[derive(Debug, Clone)]
 pub struct GmailClientBuilder {
     service_account: ServiceAccount,
@@ -31,7 +32,8 @@ pub struct GmailClientBuilder {
 }
 
 impl<'a> GmailClientBuilder {
-    /// TODO
+    /// Create a new `GmailClientBuilder`.
+    /// Will return an error if unable to read & parse the `service_account_path`, for example if the file does not exist or has an incorrect format.
     pub fn new<P: AsRef<Path>, S: Into<String>>(
         service_account_path: P,
         send_from_email: S,
@@ -43,13 +45,14 @@ impl<'a> GmailClientBuilder {
         })
     }
 
-    /// Enables "mock mode" meaning that instead of sending emails, they will be printed in a log message.
+    /// Enables "mock mode" which will log print the email instead of sending it.
     pub fn mock_mode(mut self) -> Self {
         self.mock_mode = true;
         self
     }
 
-    /// TODO
+    /// Build a `GmailClient` from this `GmailClientBuilder`.
+    /// Note: This function will retrieve an access token from the Google API and as such make an API request.
     pub async fn build(self) -> Result<GmailClient> {
         let token = retrieve_token(&self.service_account, &self.send_from_email).await?;
 
@@ -60,7 +63,7 @@ impl<'a> GmailClientBuilder {
         })
     }
 
-    /// TODO
+    /// A blocking alternative to the `build` function.
     #[cfg(feature = "blocking")]
     pub fn build_blocking(self) -> Result<GmailClient> {
         use blocking::token::retrieve_token_blocking;
@@ -75,7 +78,7 @@ impl<'a> GmailClientBuilder {
     }
 }
 
-/// TODO
+/// A client ready to send emails through the Gmail API.
 #[derive(Debug, Clone)]
 pub struct GmailClient {
     send_from_email: String,
@@ -84,7 +87,7 @@ pub struct GmailClient {
 }
 
 impl GmailClient {
-    /// Alias for `GmailClientBuilder::new`
+    /// Alias for `GmailClientBuilder::new`.
     pub fn builder<P: AsRef<Path>, S: Into<String>>(
         service_account_path: P,
         send_from_email: S,
@@ -92,7 +95,7 @@ impl GmailClient {
         GmailClientBuilder::new(service_account_path, send_from_email)
     }
 
-    /// TODO
+    /// Send an email to `send_to_email` with the specified `subject` and `content`.
     pub async fn send_email(
         &self,
         send_to_email: &str,
@@ -110,7 +113,7 @@ impl GmailClient {
         .await
     }
 
-    /// TODO
+    /// A blocking alternative to `send_email`.
     #[cfg(feature = "blocking")]
     pub fn send_email_blocking(
         &self,

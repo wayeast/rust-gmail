@@ -1,4 +1,4 @@
-/// TODO
+/// Errors that may occur during any of the operations in this lib.
 #[derive(Debug, thiserror::Error)]
 pub enum GoogleApiError {
     /// A tls error occurred.
