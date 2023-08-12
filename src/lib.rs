@@ -25,16 +25,13 @@
 //! let email_client = GmailClient::builder(
 //!     "service_account.json",
 //!     "noreply@example.test",
-//! )
-//! .expect("Failed to read service account file")
+//! )?
 //! .build()
-//! .await
-//! .expect("Failed to retrieve access token");
+//! .await?;
 //!
 //! email_client
 //!     .send_email("some_user@domain.test")
-//!     .await
-//!     .expect("Failed to send email");
+//!     .await?;
 //! ```
 //!
 //! ### Blocking Example
@@ -43,14 +40,11 @@
 //! let email_client = GmailClient::builder(
 //!     "service_account.json",
 //!     "noreply@example.test",
-//! )
-//! .expect("Failed to read service account file")
-//! .build_blocking()
-//! .expect("Failed to retrieve access token");
+//! )?
+//! .build_blocking()?;
 //!
 //! email_client
-//!     .send_email_blocking("some_user@domain.test")
-//!     .expect("Failed to send email");
+//!     .send_email_blocking("some_user@domain.test")?;
 //! ```
 
 use std::path::Path;
