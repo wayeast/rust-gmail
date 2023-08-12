@@ -1,0 +1,16 @@
+[package]
+name = "rust-gmail"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+thiserror = "1.0"
+reqwest = { version = "0.11", features = ["json"] }
+openssl = { version = "0.10", features = ["vendored"] }
+jwt = { version = "0.16", features = ["openssl"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+base64 = "0.13"
