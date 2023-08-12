@@ -1,7 +1,16 @@
 [package]
 name = "rust-gmail"
+description = "A simple crate to send emails using the Gmail API"
 version = "0.1.0"
 edition = "2021"
+keywords = ["gmail", "email"]
+categories = ["email"]
+homepage = "https://github.com/viddem/rust-gmail"
+repository = "https://github.com/viddem/rust-gmail"
+documentation = "https://docs.rs/rust-gmail"
+authors = ["Vidar Magnusson <rust-gmail@vidarmagnusson.com>"]
+license-file = "LICENSE.txt"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
