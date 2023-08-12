@@ -83,9 +83,9 @@ impl<'a> GmailClientBuilder {
         })
     }
 
-    /// Enables "mock mode" which will log print the email instead of sending it.
-    pub fn mock_mode(mut self) -> Self {
-        self.mock_mode = true;
+    /// Set "mock mode" which, if set to true, will log print the email instead of sending it.
+    pub fn mock_mode(mut self, enabled: bool) -> Self {
+        self.mock_mode = enabled;
         self
     }
 
