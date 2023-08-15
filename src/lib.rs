@@ -53,9 +53,11 @@ use async_impl::{send_email::send_email, token::retrieve_token};
 use error::Result;
 use service_account::ServiceAccount;
 
+/// Types for error handling.
+pub mod error;
+
 mod async_impl;
 mod common;
-mod error;
 mod service_account;
 
 #[cfg(feature = "blocking")]
